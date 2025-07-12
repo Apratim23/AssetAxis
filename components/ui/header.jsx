@@ -4,7 +4,9 @@ import Link from "next/link";
 import { Button } from "./button";
 import {LayoutDashboard, PenBox} from "lucide-react";
 import { Span } from "next/dist/trace";
-const Header = () => {
+import { checkUser } from "@/lib/checkUser";
+const Header = async () => {
+  await checkUser();
   return (
     <div className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
