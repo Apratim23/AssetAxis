@@ -105,7 +105,7 @@ Users automatically receive email alerts when they're nearing their monthly budg
 
 ## 🛡️ License
 
-MIT License. Use it, remix it, ship it.
+[MIT LICENSE](https://github.com/Apratim23/AssetAxis/blob/main/LICENSE). Use it, remix it, ship it.
 
 💙 Made with love by [Apratim Dutta](https://www.github.com/Apratim23)
 
