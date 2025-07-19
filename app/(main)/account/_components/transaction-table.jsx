@@ -194,7 +194,7 @@ const TransactionTable = ({ transactions }) => {
 </Select>
 
 {selectedIds.length > 0 && (<div className="flex items-center gap-2">
-  <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
+  <Button variant="destructive" size="sm" onClick={handleBulkDelete} className="cursor-pointer">
     <Trash className="h-4 w-4 mr-2"/>
     Delete Selected ({selectedIds.length})
   </Button>
@@ -202,7 +202,7 @@ const TransactionTable = ({ transactions }) => {
 )}
 
   {(searchTerm || typeFilter || recurringFilter)&&(
-    <Button variant="outline" size="icon" onClick={handleClearFilters} title="Clear Filters">
+    <Button variant="outline" size="icon" onClick={handleClearFilters} title="Clear Filters"  className="cursor-pointer">
       <X className="h-4 w-5"/>
       </Button>
   )}

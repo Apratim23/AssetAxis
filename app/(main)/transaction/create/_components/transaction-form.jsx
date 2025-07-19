@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import ReciptScanner from './recipt-scanner';
 
 const AddTransactionForm = ({accounts, categories}) => {
     const Router = useRouter();
@@ -77,10 +78,23 @@ const AddTransactionForm = ({accounts, categories}) => {
     const filteredCategories = categories.filter((category) => category.type === type);
 
 
+const handleScanComplete = (scannedData) => {
+    if(scannedData){
+        setValue("amount", scannedData.amount.toString());
+        setValue("date", new Date(scannedData.date));
+        if (scannedData.description){
+            setValue("description", scannedData.description);
+        }
+        if (scannedData.category){
+            setValue("category", scannedData.category);
+        }
+    }
+};
+
 return (
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
          { /*AI Receipt Scanner */}
-            
+            <ReciptScanner onScanComplete={handleScanComplete}/>
     <div className="space-y-2">
             <label className='text-sm font-medium'>Type</label>
 <Select 
@@ -130,7 +144,7 @@ placeholder="0.00"
             </SelectItem>
     ))}
     <CreateAccountDrawer>
-    <Button variant="ghost" className="w-full select-none items-center">Create Account</Button>
+    <Button variant="ghost" className="w-full select-none items-center cursor-pointer">Create Account</Button>
 
     </CreateAccountDrawer>
 </SelectContent>
@@ -174,7 +188,7 @@ placeholder="0.00"
             <label className='text-sm font-medium'>Date</label>
             <Popover>
 <PopoverTrigger asChild>
-    <Button variant="outline" className="w-full pl-3 text-left font-normal">
+    <Button variant="outline" className="w-full pl-3 text-left font-normal cursor-pointer">
             {date ? format(date, "PPP") : <span>Select Date</span>}
             <CalendarIcon className="h-4 w-4 ml-auto opacity-50" />
     </Button>
@@ -246,7 +260,7 @@ placeholder="0.00"
             <Button
             variant="outline"
             type="button"
-            className="min-w-[100px]"
+            className="min-w-[100px] cursor-pointer"
             onClick={()=> Router.back()}
             >Cancel</Button>
             <Button type="submit" className="min-w-[100px]" disabled={loading}>
