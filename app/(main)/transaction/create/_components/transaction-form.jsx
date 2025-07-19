@@ -13,17 +13,33 @@ import useFetch from '@/hooks/use-fetch';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format, parse } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import ReciptScanner from './recipt-scanner';
 
-const AddTransactionForm = ({accounts, categories}) => {
+const AddTransactionForm = ({accounts, categories, editMode=false, initialData=null}) => {
     const Router = useRouter();
+    const searchParams = useSearchParams();
+    const editId = searchParams.get("edit");
     const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset,}=useForm({
         resolver:zodResolver(transactionSchema),
-        defaultValues: {
+        defaultValues: 
+        editMode && initialData ? {
+            type: initialData.type,
+            amount: initialData.amount.toString(),
+            description: initialData.description || "",
+            accountId: initialData.accountId,
+            category: initialData.category || "",
+            date: new Date(initialData.date),
+            isRecurring: initialData.isRecurring || false,
+            ...(initialData.recurringInterval && {
+                recurringInterval: initialData.recurringInterval
+            }),
+        }
+        :
+        {
             type: "EXPENSE",
             amount:"",
             description:"",
@@ -34,6 +50,41 @@ const AddTransactionForm = ({accounts, categories}) => {
     });
 
     const [loading, setLoading] = React.useState(false);
+
+    // If in edit mode, define updateTransaction handler
+    const updateTransaction = async (data) => {
+        setLoading(true);
+
+        const formData = {
+            ...data,
+            amount: parseFloat(data.amount),
+            id: editId,
+        };
+
+        try {
+            const result = await updateTransaction(formData); // Replace with your actual updateTransaction action if available
+
+            if (result?.success) {
+                toast.success("Transaction updated successfully");
+                reset();
+
+                setTimeout(() => {
+                    Router.push(`/account/${result.data.accountId}`);
+                }, 1500);
+            } else {
+                toast.error(result?.message || "Something went wrong");
+            }
+        } catch (err) {
+            if (err.message.includes("Rate limit exceeded")) {
+                toast.error("⏱️ Rate limit exceeded. Please try again later.");
+            } else {
+                toast.error("❌ Unexpected error occurred");
+            }
+            console.error("❌ updateTransaction failed:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
     const type =watch("type");
