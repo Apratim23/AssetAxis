@@ -9,36 +9,36 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  directUrl      = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id        String   @id @default(uuid())
-  clerkUserId String   @unique
-  email     String   @unique
-  name      String?
-  imageUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String        @id @default(uuid())
+  clerkUserId  String        @unique
+  email        String        @unique
+  name         String?
+  imageUrl     String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   transactions Transaction[]
-  accounts Account[]
-  budgets Budget[]
+  accounts     Account[]
+  budgets      Budget[]
 
   @@map("users")
 }
 
 model Account {
-  id        String   @id @default(uuid())
-  userId    String
-  name      String
-  type      AccountType
-  balance   Decimal @default(0)
-  isDefault Boolean @default(false)
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String        @id @default(uuid())
+  userId       String
+  name         String
+  type         AccountType
+  balance      Decimal       @default(0)
+  isDefault    Boolean       @default(false)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   transactions Transaction[]
 
   @@index([userId])
@@ -46,43 +46,46 @@ model Account {
 }
 
 enum AccountType {
-  CHECKING
+  CURRENT
   SAVINGS
 }
 
 model Transaction {
-  id          String   @id @default(uuid())
-  userId      String
-  accountId   String
-  type        TransactionType
-  amount      Decimal
-  description String?
-  date        DateTime 
-  category     String
-  receiptUrl String?
-  isRecurring Boolean @default(false)
+  id                String             @id @default(uuid())
+  userId            String
+  accountId         String
+  type              TransactionType
+  amount            Decimal
+  description       String?
+  date              DateTime
+  category          String
+  receiptUrl        String?
+  isRecurring       Boolean            @default(false)
   recurringInterval RecurringInterval?
   nextRecurringDate DateTime?
-  lastProcessed DateTime?
-  status      TransactionStatus @default(COMPLETED)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  lastProcessed     DateTime?
+  status            TransactionStatus  @default(COMPLETED)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account           Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([accountId])
   @@map("transactions")
 }
+
 enum TransactionType {
   INCOME
   EXPENSE
 }
+
 enum TransactionStatus {
   PENDING
   COMPLETED
   FAILED
 }
+
 enum RecurringInterval {
   DAILY
   WEEKLY
@@ -91,13 +94,13 @@ enum RecurringInterval {
 }
 
 model Budget {
-  id        String   @id @default(uuid())
-  userId    String
-  amount    Decimal
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  amount        Decimal
   lastAlertSent DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("budgets")
